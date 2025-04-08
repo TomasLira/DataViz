@@ -1,48 +1,35 @@
 <script>
+import * as d3 from 'd3';
 
 export let data = [];
 export let selectedIndex = -1;
 
-
-import * as d3 from 'd3';
 let arcGenerator = d3.arc().innerRadius(0).outerRadius(50);
-let arc = arcGenerator({
-    startAngle: 0,
-    endAngle: 2 * Math.PI
-
-});
-
-let colors = d3.scaleOrdinal(d3.schemeTableau10);
 
 let sliceGenerator = d3.pie().value(d => d.value);
 
-
 let arcData;
 let arcs;
+$:{
+    arcData = sliceGenerator(data);
+    arcs = arcData.map(d => arcGenerator(d));
+}
 
-    $: {
-        // Reactively calculate arcData and arcs the same way we did before with sliceGenerator and arcGenerator
-        arcData =sliceGenerator(data);
-        arcs = arcData.map(d => arcGenerator(d));
-    }
 
+let colors = d3.scaleOrdinal(d3.schemeTableau10);
 
 </script>
-
-
-
 
 <div class="container">
 
 <svg viewBox="-50 -50 100 100">
-    {#each arcs as arc, index}
-    <path d={arc} fill={colors(index)}
-        class:selected={selectedIndex === index}
-        on:click={e => selectedIndex = selectedIndex === index ? -1 : index}
-        />
-    {/each}
-</svg>
+{#each arcs as arc, index}
+	<path d={arc} fill={ colors(index) }
+	      class:selected={selectedIndex === index}
+	      on:click={e => selectedIndex = selectedIndex === index ? -1 : index} />
+{/each}
 
+</svg>
 <ul class="legend">
     {#each data as d, index}
         <li style="--color: { colors(index) }">
@@ -123,18 +110,4 @@ ul:has(.selected) li:not(.selected) {
 path:hover {
 	opacity: 100% !important;
 }
-
-path {
-    /* ... */
-    cursor: pointer;
-}
-
-
 </style>
-
-
-
-
-
-
-
